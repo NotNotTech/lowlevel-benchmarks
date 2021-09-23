@@ -37,7 +37,7 @@ public static class zz_Extensions
 		}
 	}
 
-	public static unsafe void _ParallelForEach<TData>(this TData[] inputArray, int start, int endExclusive, Action<TData[], int> parallelAction) where TData : unmanaged
+	public static void _ParallelForEach<TData>(this TData[] inputArray, int start, int endExclusive, Action<TData[], int> parallelAction) where TData : unmanaged
 	{
 		var actionStruct = new _ParallelForEach_ActionHelper_Array<TData>(inputArray, parallelAction);
 		ParallelHelper.For(start, endExclusive, in actionStruct);
@@ -63,6 +63,5 @@ public static class zz_Extensions
 			Unsafe.AsRef(parallelAction).Invoke(array, index);
 		}
 	}
-
 
 }

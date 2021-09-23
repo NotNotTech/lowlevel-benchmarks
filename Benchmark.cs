@@ -493,18 +493,54 @@ public class Benchmark
 
 
 		output._ParallelForEach(0, owner.Length, (output, i) =>
-		  {
-			  var key = keys[i];
-			  var data = new Data(key);
-			  data.Write();
-			  output[i] = data;
-		  });
+		{
+			var key = keys[i];
+			var data = new Data(key);
+			data.Write();
+			output[i] = data;
+		});
 
 		output._ParallelForEach(0, owner.Length, (output, i) =>
 		{
 			output[i].Write();
 		});
 
+
+		return dumbWork.Verify(owner.Span);
+	}
+	/// <summary>
+	/// add ForRange sample, from https://github.com/dotnet/samples/tree/2cf486af936261b04a438ea44779cdc26c613f98/csharp/parallel/ParallelExtensionsExtras
+	/// </summary>
+	/// <returns></returns>
+	[Benchmark]
+	public unsafe long ParallelFor_ParallelForRangeExtension()
+	{
+		var keys = dumbWork.keys;
+		using var owner = MemoryOwner<Data>.Allocate(DumbWork.DATA_LENGTH);
+		var output = owner.DangerousGetArray().Array;  //note: backing array may be longer!
+
+
+
+		Extras.ParallelAlgorithms.ForRange(0, owner.Length, (startInclusive, endExclusive) => {
+		
+			for(var i= startInclusive; i < endExclusive; i++)
+			{
+				var key = keys[i];
+				var data = new Data(key);
+				data.Write();
+				output[i] = data;
+			}
+		
+		});
+
+		Extras.ParallelAlgorithms.ForRange(0, owner.Length, (startInclusive, endExclusive) => {
+
+			for (var i = startInclusive; i < endExclusive; i++)
+			{
+				output[i].Write();
+			}
+
+		});
 
 		return dumbWork.Verify(owner.Span);
 	}

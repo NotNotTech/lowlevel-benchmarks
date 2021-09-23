@@ -64,24 +64,25 @@ AMD Ryzen 7 3700X, 1 CPU, 16 logical and 8 physical cores
 
 | Method                                 |        Mean |      Error |     StdDev | Ratio | RatioSD |    Gen 0 |    Gen 1 |    Gen 2 |   Allocated |
 | -------------------------------------- | ----------: | ---------: | ---------: | ----: | ------: | -------: | -------: | -------: | ----------: |
-| Serial_Default                         | 7,015.27 us | 129.919 us | 121.527 us | 1.000 |    0.00 |        - |        - |        - |         5 B |
-| Serial_AllocOneObj                     | 7,101.17 us | 136.635 us | 127.808 us | 1.013 |    0.03 |        - |        - |        - |        28 B |
-| Serial_AllocOneObjPerLoop              | 7,410.49 us | 139.494 us | 123.658 us | 1.056 |    0.03 |  23.4375 |        - |        - |   240,028 B |
-| Serial_NaiveAlloc                      | 7,313.86 us |  88.510 us |  73.910 us | 1.045 |    0.02 | 242.1875 | 242.1875 | 242.1875 |   800,109 B |
-| Serial_ByRef                           | 7,217.72 us | 138.276 us | 153.693 us | 1.024 |    0.03 |        - |        - |        - |         4 B |
-| Serial_SpanOwner                       | 7,161.89 us | 139.117 us | 180.892 us | 1.019 |    0.02 |        - |        - |        - |         6 B |
-| Serial_MemoryOwner                     | 7,141.44 us | 142.226 us | 229.669 us | 1.018 |    0.04 |        - |        - |        - |        46 B |
-| Serial_SpanOwner_Array                 | 7,147.11 us | 141.356 us | 178.771 us | 1.015 |    0.04 |        - |        - |        - |         6 B |
-| Serial_MemoryOwner_Array               | 7,178.14 us | 132.140 us | 103.166 us | 1.025 |    0.02 |        - |        - |        - |        46 B |
-| Serial_SpanOwner_NoUsing               | 7,503.53 us | 138.883 us | 129.911 us | 1.070 |    0.02 | 328.1250 | 328.1250 | 328.1250 | 1,310,859 B |
-| Serial_MemoryOwner_NoUsing             | 6,990.89 us |  86.516 us |  80.927 us | 0.997 |    0.02 |        - |        - |        - |        46 B |
-| ParallelFor_NoWork                     |    48.08 us |   0.443 us |   0.393 us | 0.007 |    0.00 |   1.0986 |        - |        - |     9,187 B |
-| ParallelFor_Lambda                     |   958.28 us |  16.580 us |  15.509 us | 0.137 |    0.00 |   0.9766 |        - |        - |     9,333 B |
-| ParallelFor_Lambda_Fixed               |   970.85 us |  18.721 us |  22.991 us | 0.140 |    0.00 |   0.9766 |        - |        - |     9,266 B |
-| ParallelFor_InstanceMethod             |   976.76 us |  16.021 us |  13.378 us | 0.140 |    0.00 |   0.9766 |        - |        - |     9,158 B |
-| ParallelHelperFor_Standard             | 1,073.96 us |  20.165 us |  29.557 us | 0.152 |    0.00 |        - |        - |        - |     9,511 B |
-| ParallelHelperFor_SpanExtensionLambda  | 1,086.22 us |  19.659 us |  18.389 us | 0.155 |    0.00 |        - |        - |        - |     9,626 B |
-| ParallelHelperFor_ArrayExtensionLambda | 1,069.59 us |  21.079 us |  20.703 us | 0.153 |    0.00 |        - |        - |        - |     9,603 B |
+| Serial_Default                         | 7,124.88 us | 119.812 us | 179.329 us | 1.000 |    0.00 |        - |        - |        - |         5 B |
+| Serial_AllocOneObj                     | 6,905.45 us |  64.936 us |  57.564 us | 0.966 |    0.03 |        - |        - |        - |        28 B |
+| Serial_AllocOneObjPerLoop              | 7,085.89 us |  86.616 us |  72.329 us | 0.989 |    0.03 |  23.4375 |        - |        - |   240,028 B |
+| Serial_NaiveAlloc                      | 7,212.84 us | 128.144 us | 113.597 us | 1.009 |    0.03 | 242.1875 | 242.1875 | 242.1875 |   800,111 B |
+| Serial_ByRef                           | 7,028.02 us |  81.712 us |  76.433 us | 0.984 |    0.03 |        - |        - |        - |         4 B |
+| Serial_SpanOwner                       | 6,992.25 us |  89.641 us |  74.854 us | 0.976 |    0.03 |        - |        - |        - |         6 B |
+| Serial_MemoryOwner                     | 6,843.82 us |  68.362 us |  60.602 us | 0.957 |    0.03 |        - |        - |        - |        47 B |
+| Serial_SpanOwner_Array                 | 7,080.25 us | 127.759 us | 113.255 us | 0.991 |    0.04 |        - |        - |        - |         6 B |
+| Serial_MemoryOwner_Array               | 6,876.55 us |  75.631 us |  70.746 us | 0.963 |    0.03 |        - |        - |        - |        46 B |
+| Serial_SpanOwner_NoUsing               | 7,176.33 us |  84.524 us |  70.581 us | 1.002 |    0.04 | 328.1250 | 328.1250 | 328.1250 | 1,310,861 B |
+| Serial_MemoryOwner_NoUsing             | 6,926.58 us |  82.976 us |  69.288 us | 0.967 |    0.03 |        - |        - |        - |        47 B |
+| ParallelFor_NoWork                     |    48.51 us |   0.769 us |   0.720 us | 0.007 |    0.00 |   1.0986 |        - |        - |     9,294 B |
+| ParallelFor_Lambda                     | 1,026.18 us |  11.536 us |   9.633 us | 0.143 |    0.00 |        - |        - |        - |     9,378 B |
+| ParallelFor_Lambda_Fixed               |   951.16 us |  13.355 us |  11.152 us | 0.133 |    0.00 |   0.9766 |        - |        - |     9,350 B |
+| ParallelFor_InstanceMethod             |   946.35 us |   7.722 us |   6.448 us | 0.132 |    0.00 |   0.9766 |        - |        - |     9,092 B |
+| ParallelHelperFor_Standard             | 1,045.33 us |  20.077 us |  24.656 us | 0.147 |    0.00 |        - |        - |        - |     9,524 B |
+| ParallelHelperFor_SpanExtensionLambda  | 1,060.83 us |  20.778 us |  20.407 us | 0.149 |    0.00 |        - |        - |        - |     9,619 B |
+| ParallelHelperFor_ArrayExtensionLambda | 1,064.00 us |  14.353 us |  11.206 us | 0.148 |    0.01 |        - |        - |        - |     9,633 B |
+| ParallelFor_ParallelForRangeExtension  | 1,020.10 us |  12.134 us |  11.350 us | 0.143 |    0.00 |        - |        - |        - |    15,550 B |
 
 // * Legends *
   Mean      : Arithmetic mean of all measurements
