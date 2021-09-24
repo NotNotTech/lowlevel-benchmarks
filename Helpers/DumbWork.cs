@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace parallel_work_gc_benchmark;
+namespace lowlevel_benchmark;
 
 /// <summary>
 /// helper to obtain benchmark input and verify output.

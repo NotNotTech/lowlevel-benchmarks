@@ -7,11 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace parallel_work_gc_benchmark;
+namespace lowlevel_benchmark.Benchmarks;
 
+/// <summary>
+/// benchmark doing work on spans, input and output.   see readme.md in this folder
+/// </summary>
 //[ShortRunJob]
 [MemoryDiagnoser]
-public class Benchmark
+public class Parallel_Work
 {
 	private DumbWork dumbWork = DumbWork.INSTANCE;
 

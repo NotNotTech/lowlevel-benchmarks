@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace parallel_work_gc_benchmark.Extras;
+namespace lowlevel_benchmark.Extras;
 
 //
 // Copyright (c) Microsoft. All rights reserved.

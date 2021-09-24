@@ -1,7 +1,7 @@
 ﻿using Microsoft.Toolkit.HighPerformance.Helpers;
 using System.Runtime.CompilerServices;
 
-namespace parallel_work_gc_benchmark;
+namespace lowlevel_benchmark;
 
 public static class zz_Extensions
 {
@@ -63,5 +63,16 @@ public static class zz_Extensions
 			Unsafe.AsRef(parallelAction).Invoke(array, index);
 		}
 	}
+
+	public static bool TryRemove<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, out TValue value) where TKey : notnull
+	{
+		var toReturn = dict.TryGetValue(key, out value);
+		if (toReturn == true)
+		{
+			dict.Remove(key);
+		}
+		return toReturn;
+	}
+
 
 }

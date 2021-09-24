@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace parallel_work_gc_benchmark;
+namespace lowlevel_benchmark;
 public unsafe struct Data
 {
 	private static ThreadLocal<SHA512> TL_Sha512 = new ThreadLocal<SHA512>(() => SHA512.Create());
