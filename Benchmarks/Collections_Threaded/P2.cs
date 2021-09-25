@@ -307,6 +307,7 @@ public static class P2
 		//	return Unsafe.AsRef(in action).Invoke(batch);
 		//});
 		var helper = new RangeForEachAsyncHelper(action);
+		
 		await Parallel.ForEachAsync<(int start, int length)>(spanOwnerDangerousArray, helper.Action);
 	}
 

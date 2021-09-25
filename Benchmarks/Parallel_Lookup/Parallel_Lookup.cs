@@ -12,7 +12,7 @@ namespace lowlevel_benchmark.Benchmarks;
 
 
 
-[ShortRunJob]
+//[ShortRunJob]
 [MemoryDiagnoser]
 [ThreadingDiagnoser]
 public class Parallel_Lookup
@@ -141,6 +141,30 @@ public class Parallel_Lookup
 
 		return checkSum;
 	}
+	/// <summary>
+	/// our baseline.  lookup all data in random access from an array.
+	/// </summary>
+	/// <returns></returns>
+	[Benchmark]
+	public long Sequential_Span()
+	{
+
+
+		int checkSum = 0;
+		var lookupTable = zz_HELPER_GetLookupTable();
+
+		Span<Data> span = _allData_Array;
+
+		for (var i = 0; i < lookupTable.Length; i++)
+		{
+			var key = lookupTable[i];
+			checkSum += (int)span[key].key;
+		}
+		__ERROR.Throw(checkSum == _checkSum, "checksum failure");
+
+
+		return checkSum;
+	}
 	[Benchmark]
 	public long Sequential_ArraySegment()
 	{
@@ -171,6 +195,26 @@ public class Parallel_Lookup
 		{
 			var key = lookupTable[i];
 			checkSum += (int)_allData_List[key].key;
+		}
+		__ERROR.Throw(checkSum == _checkSum, "checksum failure");
+
+
+		return checkSum;
+	}
+	[Benchmark]
+	public long Sequential_ListUnsafe()
+	{
+
+
+		int checkSum = 0;
+		var lookupTable = zz_HELPER_GetLookupTable();
+
+		var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan(_allData_List);
+
+		for (var i = 0; i < lookupTable.Length; i++)
+		{
+			var key = lookupTable[i];
+			checkSum += (int)span[key].key;
 		}
 		__ERROR.Throw(checkSum == _checkSum, "checksum failure");
 
@@ -210,6 +254,47 @@ public class Parallel_Lookup
 		{
 			var key = lookupTable[i];
 			checkSum += (int)_allData_cDict[key].key;
+		}
+		__ERROR.Throw(checkSum == _checkSum, "checksum failure");
+
+
+		return checkSum;
+	}
+
+	[Benchmark]
+	public long Sequential_Dict_TryGet()
+	{
+
+
+		int checkSum = 0;
+		var lookupTable = zz_HELPER_GetLookupTable();
+
+		for (var i = 0; i < lookupTable.Length; i++)
+		{
+			var key = lookupTable[i];
+			var result = _allData_Dict.TryGetValue(key, out var data);			
+			checkSum += (int)data.key;
+		}
+		__ERROR.Throw(checkSum == _checkSum, "checksum failure");
+
+
+		return checkSum;
+	}
+
+
+	[Benchmark]
+	public long Sequential_CDict_TryGet()
+	{
+
+
+		int checkSum = 0;
+		var lookupTable = zz_HELPER_GetLookupTable();
+
+		for (var i = 0; i < lookupTable.Length; i++)
+		{
+			var key = lookupTable[i];
+			var result = _allData_Dict.TryGetValue(key, out var data);
+			checkSum += (int)data.key;
 		}
 		__ERROR.Throw(checkSum == _checkSum, "checksum failure");
 
@@ -325,7 +410,7 @@ public class Parallel_Lookup
 	{
 		int checkSum = 0;
 		var lookupTable = zz_HELPER_GetLookupTable();
-		
+
 		await P2.RangeForEachAsync_Span(0, lookupTable.Length, (pair) => {
 			var (start, length) = pair;
 			var end = start + length;
@@ -350,6 +435,39 @@ public class Parallel_Lookup
 
 		return checkSum;
 	}
+
+	[Benchmark]
+	public async Task<long> Parallel_Span()
+	{
+		int checkSum = 0;
+		var lookupTable = zz_HELPER_GetLookupTable();
+
+		await P2.RangeForEachAsync_Span(0, lookupTable.Length, (pair) => {
+			var (start, length) = pair;
+			var end = start + length;
+			var batchCheckSum = 0;
+			Span<Data> span = _allData_Array;
+
+			for (var i = start; i < end; i++)
+			{
+				var key = lookupTable[i];
+				batchCheckSum += (int)span[key].key;
+			}
+			Interlocked.Add(ref checkSum, batchCheckSum);
+
+
+			return ValueTask.CompletedTask;
+		});
+
+
+
+
+		__ERROR.Throw(checkSum == _checkSum, "checksum failure");
+
+
+		return checkSum;
+	}
+
 
 	[Benchmark]
 	public async Task<long> Parallel_ArraySegment()
@@ -406,6 +524,36 @@ public class Parallel_Lookup
 
 		return checkSum;
 	}
+	[Benchmark]
+	public async Task<long> Parallel_List_Unsafe()
+	{
+		int checkSum = 0;
+		var lookupTable = zz_HELPER_GetLookupTable();
+
+
+		await P2.RangeForEachAsync_Span(0, lookupTable.Length, (pair) => {
+			var (start, length) = pair;
+			var end = start + length;
+			var batchCheckSum = 0;
+
+			var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan(_allData_List);
+
+			for (var i = start; i < end; i++)
+			{
+				var key = lookupTable[i];
+				batchCheckSum += (int)span[key].key;
+			}
+			Interlocked.Add(ref checkSum, batchCheckSum);
+
+
+			return ValueTask.CompletedTask;
+		});
+
+		__ERROR.Throw(checkSum == _checkSum, "checksum failure");
+
+
+		return checkSum;
+	}
 
 	[Benchmark]
 	public async Task<long> Parallel_Dict()
@@ -449,6 +597,63 @@ public class Parallel_Lookup
 			{
 				var key = lookupTable[i];
 				batchCheckSum += (int)_allData_cDict[key].key;
+			}
+			Interlocked.Add(ref checkSum, batchCheckSum);
+
+
+			return ValueTask.CompletedTask;
+		});
+
+		__ERROR.Throw(checkSum == _checkSum, "checksum failure");
+
+
+		return checkSum;
+	}
+
+	[Benchmark]
+	public async Task<long> Parallel_Dict_TryGet()
+	{
+		int checkSum = 0;
+		var lookupTable = zz_HELPER_GetLookupTable();
+
+		await P2.RangeForEachAsync_Span(0, lookupTable.Length, (pair) => {
+			var (start, length) = pair;
+			var end = start + length;
+			var batchCheckSum = 0;
+
+			for (var i = start; i < end; i++)
+			{
+				var key = lookupTable[i];
+				var result = _allData_Dict.TryGetValue(key, out var data);
+				batchCheckSum += (int)data.key;
+			}
+			Interlocked.Add(ref checkSum, batchCheckSum);
+
+
+			return ValueTask.CompletedTask;
+		});
+
+		__ERROR.Throw(checkSum == _checkSum, "checksum failure");
+
+
+		return checkSum;
+	}
+	[Benchmark]
+	public async Task<long> Parallel_CDict_TryGet()
+	{
+		int checkSum = 0;
+		var lookupTable = zz_HELPER_GetLookupTable();
+
+		await P2.RangeForEachAsync_Span(0, lookupTable.Length, (pair) => {
+			var (start, length) = pair;
+			var end = start + length;
+			var batchCheckSum = 0;
+
+			for (var i = start; i < end; i++)
+			{
+				var key = lookupTable[i];
+				var result = _allData_Dict.TryGetValue(key, out var data);
+				batchCheckSum += (int)data.key;
 			}
 			Interlocked.Add(ref checkSum, batchCheckSum);
 
