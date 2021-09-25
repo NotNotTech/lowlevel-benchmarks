@@ -3,20 +3,6 @@ benchmarking ways of parallel processing big spans/data while being considerate 
 
 
 
-## how to use
-1. open solution in visual studio 2022
-2. run solution
-3. wait a long time for benchmarks to run
-
-
-## structure
-- `Program.cs` - entrypoint
-- `Benchmark.cs` - benchmark tests
-- `DumbWork.cs` - helper containing input data and output verification logic
-- `Data.cs` - helper containing structure of test data worked on in benchmarks
-- `zz_Extensions.cs` - extension method for `Span<T>` and `Array` to make parallel easier.
-
-
 ## The Benchmarks
 
 Benchmark code follows this pattern, taken from the `Serial_Default` baseline:
