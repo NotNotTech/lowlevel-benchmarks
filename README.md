@@ -4,6 +4,7 @@ benchmarking ways of doing lowlevel work in dotnet.
 
 
 # TLDR;
+1. **Don't do cheap work in parallel**.  For example, in some of these benchmarks I get a 2x speedup for 16x the cpu cost.
 1. For lookups, `Span` is fastest.   Avoid Dictionary/ConcurrentDictionary in hotpaths
 1. Avoid add/remove from `ConcurrentDictionary` in hotpaths
 1. `Interlocked` is expensive to use in hotpaths.   do per-thread sums or write out to a seperate results span for processing back on the main thread. Using a `ForRange()` parallel work function is best
