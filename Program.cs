@@ -74,7 +74,8 @@ public class Program
 
 		//var benchmark = new Benchmark();
 		//benchmark.Serial_Default();
-		var summary = BenchmarkRunner.Run<Collections_Threaded>(new BenchmarkDotNet.Configs.DebugInProcessConfig());
+		//var summary = BenchmarkRunner.Run<Collections_Threaded>(new BenchmarkDotNet.Configs.DebugInProcessConfig());
+		var summary = BenchmarkRunner.Run<Parallel_Lookup>(new BenchmarkDotNet.Configs.DebugInProcessConfig());
 		//var summary = BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, new BenchmarkDotNet.Configs.DebugInProcessConfig());
 #else
 		var summary = BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);

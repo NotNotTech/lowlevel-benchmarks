@@ -1,4 +1,5 @@
-﻿using Microsoft.Toolkit.HighPerformance.Helpers;
+﻿using lowlevel_benchmark.Helpers;
+using Microsoft.Toolkit.HighPerformance.Helpers;
 using System.Runtime.CompilerServices;
 
 namespace lowlevel_benchmark;
@@ -74,5 +75,18 @@ public static class zz_Extensions
 		return toReturn;
 	}
 
+	public static void _Randomize<T>(this T[] target)
+	{
+		//lock (_rand)
+		{
+			for (var index = 0; index < target.Length; index++)
+			{
+				var swapIndex = __.Rand.Next(0, target.Length);
+				var value = target[index];
+				target[index] = target[swapIndex];
+				target[swapIndex] = value;
+			}
+		}
+	}
 
 }

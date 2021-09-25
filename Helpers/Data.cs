@@ -8,12 +8,15 @@ public unsafe struct Data
 	public long key;
 	public int writeCount;
 
+	public bool isInit;
+
 	private fixed byte _someData[64];
 
 	public Data(long key)
 	{
 		this.key = key;
 		writeCount = 0;
+		isInit = true;
 	}
 
 	public void Write()

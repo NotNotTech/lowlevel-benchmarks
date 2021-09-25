@@ -573,7 +573,7 @@ public class Collections_Threaded
 		return checkSum;
 	}
 	[Benchmark]
-	public async Task<long> Parallel_List_Read_AsyncValueTask()
+	public async ValueTask<long> Parallel_List_Read_AsyncValueTask()
 	{
 		long checkSum = 0;
 
@@ -627,6 +627,49 @@ public class Collections_Threaded
 
 	[Benchmark]
 	public async Task<long> Parallel_List_Read_AsyncAwaitTask()
+	{
+		long checkSum = 0;
+
+		for (var i = 0; i < _allData_List.Count; i++)
+		{
+			var index = i;
+			var task = Task.Run(() =>
+			{
+				var data = _allData_List[index];
+				Interlocked.Add(ref checkSum, data.key);
+				return ValueTask.CompletedTask;
+			});
+			tasksCurrent.Add(task);
+
+
+			if (tasksCurrent.Count >= Environment.ProcessorCount)
+			{
+				if (tasksOld.Count > 0)
+				{
+					await Task.WhenAll(tasksOld);
+					tasksOld.Clear();
+					var temp = tasksOld;
+					tasksOld = tasksCurrent;
+					tasksCurrent = temp;
+				}
+
+			}
+		}
+		await Task.WhenAll(tasksOld);
+		await Task.WhenAll(tasksCurrent);
+		tasksOld.Clear();
+		tasksCurrent.Clear();
+
+
+
+		__ERROR.Throw(checkSum == _checkSum, "checksums don't match");
+
+		Cleanup();
+		return checkSum;
+	}
+
+	[Benchmark]
+	public async ValueTask<long> Parallel_List_Read_AsyncAwait_ValueTask()
 	{
 		long checkSum = 0;
 
@@ -722,6 +765,29 @@ public class Collections_Threaded
 		return checkSum;
 	}
 	[Benchmark]
+	public long P2_RangeFor_Span()
+	{
+		long checkSum = 0;
+
+
+		P2.RangeFor_Span(0, _allKeys.Length, (batch) =>
+		{
+			var (start, length) = batch;
+			var end = start + length;
+			for (var i = start; i < end; i++)
+			{
+				var data = _allData_List[i];
+				__ERROR.Throw(data.key == _allKeys[i]);
+				Interlocked.Add(ref checkSum, data.key);
+			}
+		});
+
+		__ERROR.Throw(checkSum == _checkSum, "checksums don't match");
+
+		Cleanup();
+		return checkSum;
+	}
+	[Benchmark]
 	public async Task<long> P2_RangeForEachAsync()
 	{
 		long checkSum = 0;
@@ -747,7 +813,7 @@ public class Collections_Threaded
 	}
 
 	[Benchmark]
-	public async Task<long> P2_RangeForEachAsync_ValueTask()
+	public async ValueTask<long> P2_RangeForEachAsync_ValueTask()
 	{
 		long checkSum = 0;
 
@@ -881,7 +947,7 @@ public class Collections_Threaded
 		long checkSum = 0;
 
 
-		await P2.RangeForEachAsync(0, _allKeys.Length, async (batch) =>
+		await P2.RangeForEachAsync(0, _allKeys.Length,async (batch) =>
 		{
 			var (start, length) = batch;
 			var end = start + length;
@@ -895,6 +961,7 @@ public class Collections_Threaded
 			}
 			Interlocked.Add(ref checkSum, sum);
 			//return ValueTask.CompletedTask;
+			//return Task.CompletedTask;
 		});
 
 		__ERROR.Throw(checkSum == _checkSum, "checksums don't match");
@@ -905,7 +972,7 @@ public class Collections_Threaded
 
 
 	[Benchmark]
-	public async Task<long> P2_RangeForEachAsync_ValueTask_SumInterlock()
+	public async ValueTask<long> P2_RangeForEachAsync_ValueTask_SumInterlock()
 	{
 		long checkSum = 0;
 
@@ -931,6 +998,154 @@ public class Collections_Threaded
 		Cleanup();
 		return checkSum;
 	}
+	[Benchmark]
+	public async Task<long> P2_RangeForEachAsync_Span_SumInterlock()
+	{
+		long checkSum = 0;
+
+
+		await P2.RangeForEachAsync_Span(0, _allKeys.Length, async (batch) =>
+		{
+			var (start, length) = batch;
+			var end = start + length;
+
+			long sum = 0;
+			for (var i = start; i < end; i++)
+			{
+				var data = _allData_List[i];
+				__ERROR.Throw(data.key == _allKeys[i]);
+				sum += data.key;
+			}
+			Interlocked.Add(ref checkSum, sum);
+			//return ValueTask.CompletedTask;
+			//return Task.CompletedTask;
+		});
+
+		__ERROR.Throw(checkSum == _checkSum, "checksums don't match");
+
+		Cleanup();
+		return checkSum;
+	}
+
+	[Benchmark]
+	public async Task<long> P2_RangeForEachAsync_Span_TASK_SumInterlock()
+	{
+		long checkSum = 0;
+
+
+		await P2.RangeForEachAsync_Span_TASK(0, _allKeys.Length, (batch) =>
+		{
+			var (start, length) = batch;
+			var end = start + length;
+
+			long sum = 0;
+			for (var i = start; i < end; i++)
+			{
+				var data = _allData_List[i];
+				__ERROR.Throw(data.key == _allKeys[i]);
+				sum += data.key;
+			}
+			Interlocked.Add(ref checkSum, sum);
+			return ValueTask.CompletedTask;
+			//return Task.CompletedTask;
+		});
+
+		__ERROR.Throw(checkSum == _checkSum, "checksums don't match");
+
+		Cleanup();
+		return checkSum;
+	}
+
+
+	[Benchmark]
+	public async ValueTask<long> P2_RangeForEachAsync_Span_ValueTask_SumInterlock()
+	{
+		long checkSum = 0;
+
+
+		await P2.RangeForEachAsync_Span(0, _allKeys.Length, (batch) =>
+		{
+			var (start, length) = batch;
+			var end = start + length;
+
+			long sum = 0;
+			for (var i = start; i < end; i++)
+			{
+				var data = _allData_List[i];
+				__ERROR.Throw(data.key == _allKeys[i]);
+				sum += data.key;
+			}
+			Interlocked.Add(ref checkSum, sum);
+			return ValueTask.CompletedTask;
+		});
+
+		__ERROR.Throw(checkSum == _checkSum, "checksums don't match");
+
+		Cleanup();
+		return checkSum;
+	}
+
+
+
+	[Benchmark]
+	public async Task<long> P2_RangeForEachAsync_Span_SumInterlock_Helper()
+	{
+		long checkSum = 0;
+
+
+		await P2.RangeForEachAsync_Span_Helper(0, _allKeys.Length, async (batch) =>
+		{
+			var (start, length) = batch;
+			var end = start + length;
+
+			long sum = 0;
+			for (var i = start; i < end; i++)
+			{
+				var data = _allData_List[i];
+				__ERROR.Throw(data.key == _allKeys[i]);
+				sum += data.key;
+			}
+			Interlocked.Add(ref checkSum, sum);
+			//return ValueTask.CompletedTask;
+			//return Task.CompletedTask;
+		});
+
+		__ERROR.Throw(checkSum == _checkSum, "checksums don't match");
+
+		Cleanup();
+		return checkSum;
+	}
+
+
+	[Benchmark]
+	public async ValueTask<long> P2_RangeForEachAsync_Span_ValueTask_SumInterlock_Helper()
+	{
+		long checkSum = 0;
+
+
+		await P2.RangeForEachAsync_Span_Helper(0, _allKeys.Length, (batch) =>
+		{
+			var (start, length) = batch;
+			var end = start + length;
+
+			long sum = 0;
+			for (var i = start; i < end; i++)
+			{
+				var data = _allData_List[i];
+				__ERROR.Throw(data.key == _allKeys[i]);
+				sum += data.key;
+			}
+			Interlocked.Add(ref checkSum, sum);
+			return ValueTask.CompletedTask;
+		});
+
+		__ERROR.Throw(checkSum == _checkSum, "checksums don't match");
+
+		Cleanup();
+		return checkSum;
+	}
+
+
 
 	[Benchmark]
 	public async Task<long> P2_RangeActionBlock_SumInterlock()
