@@ -9,7 +9,7 @@ namespace lowlevel_benchmark.Helpers;
 
 
 /// <summary>
-/// lolo: a static utils helper
+/// a static utils helper
 /// </summary>
 public unsafe static class __
 {

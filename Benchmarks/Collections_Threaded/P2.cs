@@ -5,6 +5,9 @@ using System.Threading.Tasks.Dataflow;
 
 namespace lowlevel_benchmark.Benchmarks;
 
+/// <summary>
+/// Various ParallelHelper style static methods to experiment with efficient use of `Parallel.For()` style workflows
+/// </summary>
 public static class P2
 {
 
@@ -26,9 +29,8 @@ public static class P2
 		var batchSize = length / batchCount;
 
 		batchSize = (int)(batchSize * batchSizeMultipler);
-		//batchSize = Math.Max(batchSize, minBatchSize);
-		//batchSize = Math.Min(batchSize, maxBatchSize);
 		batchSize = Math.Min(batchSize, length);
+		batchSize = Math.Max(1, batchSize);
 
 		//update batchCount bsed on actual batchSize
 		if (length % batchSize == 0)
@@ -75,9 +77,6 @@ public static class P2
 
 		return owner;
 
-		////do the parallel work
-		//var helper = new ForRangeHelper(owner, action);
-		//return helper;
 	}
 
 	private static SpanOwner<(int startInclusive, int length)> _RangeHelper_Span(int start, int length, float batchSizeMultipler)
@@ -93,9 +92,8 @@ public static class P2
 		var batchSize = length / batchCount;
 
 		batchSize = (int)(batchSize * batchSizeMultipler);
-		//batchSize = Math.Max(batchSize, minBatchSize);
-		//batchSize = Math.Min(batchSize, maxBatchSize);
 		batchSize = Math.Min(batchSize, length);
+		batchSize = Math.Max(1, batchSize);
 
 		//update batchCount bsed on actual batchSize
 		if (length % batchSize == 0)

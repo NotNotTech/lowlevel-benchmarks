@@ -7,7 +7,7 @@ using System.Runtime;
 namespace lowlevel_benchmark.Helpers
 {
 	/// <summary>
-	/// Debug helper used in #CHECKED builds.  Checked builds perform extra checks to ensure thread safety and detect data corruption
+	/// diag helpers coppied from my `DumDum` engine.  
 	/// </summary>
 	[DebuggerNonUserCode]
 	public static class __CHECKED

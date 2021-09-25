@@ -4,6 +4,9 @@ using System.Runtime.CompilerServices;
 
 namespace lowlevel_benchmark;
 
+/// <summary>
+/// various extension methods munged together for use in benchmarking
+/// </summary>
 public static class zz_Extensions
 {
 	//public delegate void Action_Ref<T1, T2>(ref T1 arg1, ref T2 arg2);

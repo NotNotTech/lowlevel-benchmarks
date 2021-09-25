@@ -10,7 +10,9 @@ using System.Threading.Tasks;
 
 namespace lowlevel_benchmark.Benchmarks;
 
-
+/// <summary>
+/// benchmark reading random access data.   see ReadMe.md in this folder.
+/// </summary>
 
 //[ShortRunJob]
 [MemoryDiagnoser]

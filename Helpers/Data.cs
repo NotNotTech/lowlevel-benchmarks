@@ -1,6 +1,10 @@
 ﻿using System.Security.Cryptography;
 
 namespace lowlevel_benchmark;
+
+/// <summary>
+/// test data used for the benchmarks.
+/// </summary>
 public unsafe struct Data
 {
 	private static ThreadLocal<SHA512> TL_Sha512 = new ThreadLocal<SHA512>(() => SHA512.Create());
@@ -19,6 +23,9 @@ public unsafe struct Data
 		isInit = true;
 	}
 
+	/// <summary>
+	/// do some expensive cpu work and bump the `writeCount`
+	/// </summary>
 	public void Write()
 	{
 		Span<byte> input = stackalloc byte[32];

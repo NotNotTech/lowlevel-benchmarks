@@ -11,7 +11,9 @@ using System.Threading.Tasks;
 namespace lowlevel_benchmark.Benchmarks;
 
 
-
+/// <summary>
+/// See ReadMe.md in this folder.  Benchmark cost of reading/writing Span data using data from various backing storage.  
+/// </summary>
 //[ShortRunJob]
 [MemoryDiagnoser]
 [ThreadingDiagnoser]
@@ -63,14 +65,6 @@ public class Collections_Threaded
 			_allData_List.Add(new Data(key));
 			_blank_List.Add(default);
 		}
-
-
-		////create a subset of keys for adding vs those already started
-		//int addAmount =(int)( COUNT * ADDKEYS_PERCENT);
-		//_startingKeys = new long[COUNT -addAmount];
-		//_addingKeys = new long[addAmount];
-		//Array.Copy(_allKeys,_startingKeys,_startingKeys.Length);
-		//Array.Copy(_allKeys, _startingKeys.Length, _addingKeys, 0, _addingKeys.Length);
 	}
 
 
