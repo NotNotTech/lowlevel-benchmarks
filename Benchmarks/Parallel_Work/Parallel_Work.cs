@@ -14,8 +14,19 @@ namespace lowlevel_benchmark.Benchmarks;
 /// </summary>
 //[ShortRunJob]
 [MemoryDiagnoser]
+[ThreadingDiagnoser]
 public class Parallel_Work
 {
+#if DEBUG
+	/// <summary>
+	/// causes the tests to run super fast/sloppy
+	/// </summary>
+	[IterationSetup]
+	public void Init()
+	{
+
+	}
+#endif
 	private DumbWork dumbWork = DumbWork.INSTANCE;
 
 

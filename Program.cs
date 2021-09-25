@@ -2,6 +2,7 @@
 
 using BenchmarkDotNet.Running;
 using lowlevel_benchmark.Benchmarks;
+using lowlevel_benchmark.Helpers;
 
 namespace lowlevel_benchmark;
 
@@ -16,6 +17,9 @@ public class Program
 		//args = newArgs;
 
 
+		//var args2 = string[]{"0"} with args;
+
+		//args = args.Prepend("0").ToArray();
 
 		//var x =new [] { "0" };
 
@@ -25,9 +29,48 @@ public class Program
 		//args ={"0",...args }
 #if DEBUG
 
-		var bm = new Collections_Threaded();
-		bm.Setup();
-		bm.Parallel_Dict_AddRemove();
+
+
+
+
+
+
+
+
+
+
+		//for (var i = 0; i < 100000; i++)
+		//{
+		//	var startInclusive = __.Rand.Next(0, 100);
+		//	var length = __.Rand.Next(0, 100);
+		//	var maxParallel = __.Rand.Next(1, Environment.ProcessorCount * 2);
+		//	var maxBatchSize = __.Rand.Next(1, 100);
+		//	var minBatchSize = __.Rand.Next(0, 100);
+		//	P2.RangeFor(startInclusive, length,, maxBatchSize, minBatchSize);
+		//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+		//var bm = new Collections_Threaded();
+		//bm.Setup();
+
+
+		//bm.Sequential_List_Read_Linq();
+		//bm.Parallel_List_Read_PLinq();
+		//bm.P2_RangeFor();
+
+		//await bm.Parallel_List_Read_AsyncTask();
+		//await bm.Parallel_List_Read_AsyncValueTask();
 
 		//var benchmark = new Benchmark();
 		//benchmark.Serial_Default();
