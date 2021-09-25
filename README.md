@@ -29,7 +29,7 @@ benchmarking ways of doing lowlevel work in dotnet.
 
 ## The Benchmarks
 
-these are the benchmarks, contained in subfolders of `/Benchmarks/`:
+these are the benchmarks, contained in subfolders of `/Benchmarks/`.  Look at each sub folder for a `ReadMe.md` with individual findings:
 
 - `Collections_Threaded` checks speed/correctness of doing collection read/writes from threads
 - `Parallel_Work` checks doing work on `Span<T>` from threads
