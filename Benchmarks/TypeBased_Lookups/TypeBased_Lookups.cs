@@ -36,12 +36,19 @@ public class InstanceLookup
 
 	public int Get<T>()
 	{
-		if (!storage.TryGetValue(typeof(T), out var index))
+		ref var toReturn = ref System.Runtime.InteropServices.CollectionsMarshal.GetValueRefOrAddDefault(storage, typeof(T), out var exists);
+		if (!exists)
 		{
-			index = indexCounter++;
-			storage.Add(typeof(T), index);
+			toReturn = indexCounter++;
 		}
-		return index;
+		return toReturn;
+
+		//if (!storage.TryGetValue(typeof(T), out var index))
+		//{
+		//	index = indexCounter++;
+		//	storage.Add(typeof(T), index);
+		//}
+		//return index;
 	}
 
 }
@@ -57,15 +64,23 @@ public class TypeBased_Lookups
 		var toReturn = 0;
 		for (var i = 0; i < LOOPCOUNT; i++)
 		{
-			toReturn += GlobalLookup.Get<int>();
-			toReturn += GlobalLookup.Get<float>();
-			toReturn += GlobalLookup.Get<bool>();
-			toReturn += GlobalLookup.Get<long>();
-			toReturn += GlobalLookup.Get<byte>();
-			toReturn += GlobalLookup.Get<short>();
-			toReturn += GlobalLookup.Get<double>();
-			toReturn += GlobalLookup.Get<string>();
-			toReturn += GlobalLookup.Get<object>();
+			//toReturn += GlobalLookup.Get<int>();
+			//toReturn += GlobalLookup.Get<float>();
+			//toReturn += GlobalLookup.Get<bool>();
+			//toReturn += GlobalLookup.Get<long>();
+			//toReturn += GlobalLookup.Get<byte>();
+			//toReturn += GlobalLookup.Get<short>();
+			//toReturn += GlobalLookup.Get<double>();
+			//toReturn += GlobalLookup.Get<string>();
+			//toReturn += GlobalLookup.Get<object>();
+			toReturn += GlobalLookup.Get<GlobalLookup<int>>();
+			toReturn += GlobalLookup.Get<GlobalLookup<string>>();
+			toReturn += GlobalLookup.Get<GlobalLookup<object>>();
+			toReturn += GlobalLookup.Get<GlobalLookup<TypeBased_Lookups>>();
+			toReturn += GlobalLookup.Get<InstanceLookup>();
+			toReturn += GlobalLookup.Get<TypeBased_Lookups>();
+			toReturn += GlobalLookup.Get<System.Threading.Thread>();
+			toReturn += GlobalLookup.Get<System.Collections.ArrayList>();
 		}
 
 		return toReturn;
@@ -76,15 +91,23 @@ public class TypeBased_Lookups
 		var toReturn = 0;
 		for (var i = 0; i < LOOPCOUNT; i++)
 		{
-			toReturn += instanceLookup.Get<int>();
-			toReturn += instanceLookup.Get<float>();
-			toReturn += instanceLookup.Get<bool>();
-			toReturn += instanceLookup.Get<long>();
-			toReturn += instanceLookup.Get<byte>();
-			toReturn += instanceLookup.Get<short>();
-			toReturn += instanceLookup.Get<double>();
-			toReturn += instanceLookup.Get<string>();
-			toReturn += instanceLookup.Get<object>();
+			//toReturn += instanceLookup.Get<int>();
+			//toReturn += instanceLookup.Get<float>();
+			//toReturn += instanceLookup.Get<bool>();
+			//toReturn += instanceLookup.Get<long>();
+			//toReturn += instanceLookup.Get<byte>();
+			//toReturn += instanceLookup.Get<short>();
+			//toReturn += instanceLookup.Get<double>();
+			//toReturn += instanceLookup.Get<string>();
+			//toReturn += instanceLookup.Get<object>();
+			toReturn += instanceLookup.Get<GlobalLookup<int>>();
+			toReturn += instanceLookup.Get<GlobalLookup<string>>();
+			toReturn += instanceLookup.Get<GlobalLookup<object>>();
+			toReturn += instanceLookup.Get<GlobalLookup<TypeBased_Lookups>>();
+			toReturn += instanceLookup.Get<InstanceLookup>();
+			toReturn += instanceLookup.Get<TypeBased_Lookups>();
+			toReturn += instanceLookup.Get<System.Threading.Thread>();
+			toReturn += instanceLookup.Get<System.Collections.ArrayList>();
 		}
 		return toReturn;
 	}
