@@ -1,6 +1,7 @@
 ﻿using lowlevel_benchmark.Helpers;
 using Microsoft.Toolkit.HighPerformance.Helpers;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace lowlevel_benchmark;
 
@@ -90,6 +91,23 @@ public static class zz_Extensions
 				target[swapIndex] = value;
 			}
 		}
+	}
+
+	/// <summary>
+	/// warning: do not modify list while enumerating span
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static Span<T> _AsSpan_Unsafe_Inline<T>(this List<T> list)
+	{
+		return CollectionsMarshal.AsSpan(list);
+	}
+
+	/// <summary>
+	/// warning: do not modify list while enumerating span
+	/// </summary>
+	public static Span<T> _AsSpan_Unsafe<T>(this List<T> list)
+	{
+		return CollectionsMarshal.AsSpan(list);
 	}
 
 }

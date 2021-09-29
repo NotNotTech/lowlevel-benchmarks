@@ -19,8 +19,8 @@ Every benchmark run accesses the data in a different order, to simulate random a
    - if you need to access using a dictionary, use `.TryGet()` not indexers.  Indexers add another 10x cost.
 
 # Conclusion
-- Build storage using a `List', and use `System.Runtime.Interop.CollectionMarshal.AsSpan()` to do lookups
-   - In the 'DumDum' engine: build storage using a List structure like `AllocSlotList<T>` and do direct access using `List._AsSpan` extension methods
+- Build storage using a `List`, and use `System.Runtime.Interop.CollectionMarshal.AsSpan()` to do lookups
+   - even if the conversion to Span is in a hotpath, it's still faster than List indexers
 
 
 
@@ -33,31 +33,46 @@ AMD Ryzen 7 3700X, 1 CPU, 16 logical and 8 physical cores
   DefaultJob : .NET 6.0.0 (6.0.21.45113), X64 RyuJIT
 
 
-|                       Method |        Mean |      Error |     StdDev |      Median | Ratio | RatioSD | Completed Work Items | Lock Contentions | Allocated |
-|----------------------------- |------------:|-----------:|-----------:|------------:|------:|--------:|---------------------:|-----------------:|----------:|
-|             Sequential_Array |   153.18 us |   2.908 us |   2.578 us |   152.78 us |  1.00 |    0.00 |                    - |                - |         - |
-|              Sequential_Span |   142.37 us |   2.782 us |   3.617 us |   142.39 us |  0.93 |    0.03 |                    - |                - |         - |
-|      Sequential_ArraySegment |   712.49 us |  14.072 us |  13.821 us |   712.92 us |  4.64 |    0.12 |                    - |                - |       1 B |
-|              Sequential_List |   680.00 us |  12.746 us |  11.299 us |   681.09 us |  4.44 |    0.09 |                    - |                - |         - |
-|        Sequential_ListUnsafe |   142.29 us |   2.837 us |   5.188 us |   141.65 us |  0.94 |    0.04 |                    - |                - |         - |
-|              Sequential_Dict | 3,609.60 us |  94.073 us | 257.525 us | 3,619.48 us | 21.94 |    1.70 |                    - |                - |       2 B |
-|             Sequential_CDict | 5,127.67 us | 265.993 us | 750.237 us | 4,896.34 us | 37.63 |    6.29 |                    - |                - |       2 B |
-|       Sequential_Dict_TryGet | 3,126.96 us | 280.412 us | 795.482 us | 2,867.97 us | 23.42 |    6.12 |                    - |                - |       6 B |
-|      Sequential_CDict_TryGet | 2,709.04 us |  86.318 us | 244.869 us | 2,635.22 us | 17.83 |    1.95 |                    - |                - |       2 B |
-|        Sequential_Array_Task |   150.47 us |   2.405 us |   5.715 us |   149.34 us |  0.98 |    0.04 |                    - |                - |      72 B |
-| Sequential_ArraySegment_Task |   714.50 us |  14.272 us |  31.025 us |   710.44 us |  4.73 |    0.17 |                    - |                - |      73 B |
-|         Sequential_List_Task |   666.17 us |  12.321 us |  14.667 us |   664.88 us |  4.35 |    0.15 |                    - |                - |      72 B |
-|         Sequential_Dict_Task | 3,233.33 us |  63.908 us | 148.117 us | 3,234.57 us | 21.28 |    0.92 |                    - |                - |      76 B |
-|        Sequential_CDict_Task | 3,649.55 us |  72.021 us |  98.582 us | 3,634.32 us | 23.83 |    0.73 |                    - |                - |      74 B |
-|               Parallel_Array |    93.02 us |   0.982 us |   0.871 us |    92.69 us |  0.61 |    0.01 |              12.2773 |           0.0026 |     824 B |
-|                Parallel_Span |    90.33 us |   1.795 us |   1.679 us |    90.83 us |  0.59 |    0.01 |              12.1191 |           0.0017 |     824 B |
-|        Parallel_ArraySegment |   175.00 us |   1.236 us |   1.096 us |   175.05 us |  1.14 |    0.03 |              15.8958 |           0.0010 |     824 B |
-|                Parallel_List |   167.03 us |   1.510 us |   1.261 us |   166.54 us |  1.09 |    0.02 |              15.8506 |           0.0002 |     824 B |
-|         Parallel_List_Unsafe |    88.01 us |   0.451 us |   0.400 us |    88.01 us |  0.57 |    0.01 |              11.8629 |           0.0009 |     824 B |
-|                Parallel_Dict |   401.55 us |   4.950 us |   4.133 us |   400.29 us |  2.62 |    0.06 |              15.9673 |           0.0020 |     824 B |
-|               Parallel_CDict |   449.48 us |   8.900 us |   7.432 us |   448.78 us |  2.93 |    0.08 |              15.9678 |           0.0005 |     824 B |
-|         Parallel_Dict_TryGet |   363.83 us |   5.747 us |  10.214 us |   360.22 us |  2.40 |    0.10 |              15.9526 |           0.0005 |     825 B |
-|        Parallel_CDict_TryGet |   354.97 us |   3.629 us |   3.395 us |   353.85 us |  2.32 |    0.04 |              15.9507 |           0.0005 |     824 B |
+|                                                Method |        Mean |      Error |     StdDev |      Median | Ratio | RatioSD | Completed Work Items | Lock Contentions | Allocated |
+|------------------------------------------------------ |------------:|-----------:|-----------:|------------:|------:|--------:|---------------------:|-----------------:|----------:|
+|                                      Sequential_Array |   133.63 us |   2.260 us |   2.003 us |   133.82 us |  1.00 |    0.00 |                    - |                - |         - |
+|                                Sequential_Array_Local |   135.73 us |   1.888 us |   2.825 us |   135.09 us |  1.02 |    0.03 |                    - |                - |         - |
+|                                       Sequential_Span |   137.21 us |   2.731 us |   4.252 us |   136.68 us |  1.02 |    0.04 |                    - |                - |         - |
+|                     Sequential_ArraySpanCastAgressive |   171.38 us |   3.419 us |   6.421 us |   171.24 us |  1.27 |    0.04 |                    - |                - |         - |
+|                Sequential_ArrayUnsafeExtensionPointer |   124.58 us |   2.472 us |   4.394 us |   123.47 us |  0.93 |    0.04 |                    - |                - |         - |
+|              Sequential_ArrayUnsafeExtensionAgressive |   138.74 us |   2.769 us |   7.719 us |   136.60 us |  1.02 |    0.06 |                    - |                - |         - |
+|                        Sequential_Array_UnsafePointer |   126.74 us |   2.430 us |   3.407 us |   125.81 us |  0.96 |    0.03 |                    - |                - |         - |
+|                         Sequential_Array_FixedPointer |   127.74 us |   2.554 us |   5.868 us |   125.55 us |  0.98 |    0.04 |                    - |                - |         - |
+|                               Sequential_ArraySegment |   684.35 us |  19.403 us |  54.087 us |   670.46 us |  5.10 |    0.32 |                    - |                - |         - |
+|                                       Sequential_List |   658.19 us |  19.171 us |  54.384 us |   650.76 us |  4.91 |    0.40 |                    - |                - |         - |
+|                                 Sequential_ListUnsafe |   141.37 us |   3.652 us |  10.240 us |   138.07 us |  1.09 |    0.12 |                    - |                - |         - |
+|                        Sequential_ListUnsafeAgressive |   232.19 us |   7.082 us |  19.507 us |   227.85 us |  1.77 |    0.14 |                    - |                - |         - |
+|              Sequential_ListUnsafeAgressive_Extension |   234.55 us |   6.991 us |  19.834 us |   229.47 us |  1.90 |    0.17 |                    - |                - |         - |
+|        Sequential_ListUnsafeAgressive_ExtensionInline |   227.89 us |   4.726 us |  12.938 us |   225.51 us |  1.70 |    0.12 |                    - |                - |         - |
+| Sequential_ListUnsafeAgressive_ExtensionInlineOnecall |   218.61 us |   4.198 us |  11.772 us |   214.53 us |  1.70 |    0.06 |                    - |                - |         - |
+|                                       Sequential_Dict | 2,613.65 us |  52.073 us | 108.695 us | 2,597.55 us | 19.79 |    0.80 |                    - |                - |       2 B |
+|                                      Sequential_CDict | 3,604.48 us | 161.142 us | 470.060 us | 3,428.64 us | 25.29 |    2.74 |                    - |                - |       3 B |
+|                                Sequential_Dict_TryGet | 2,110.69 us |  52.477 us | 148.013 us | 2,116.61 us | 16.15 |    0.69 |                    - |                - |       1 B |
+|                               Sequential_CDict_TryGet | 2,240.59 us |  51.034 us | 142.262 us | 2,240.78 us | 16.78 |    1.05 |                    - |                - |       2 B |
+|                                 Sequential_Array_Task |   140.51 us |   2.417 us |   2.143 us |   141.11 us |  1.05 |    0.02 |                    - |                - |      72 B |
+|                          Sequential_ArraySegment_Task |   647.51 us |  12.841 us |  17.142 us |   645.30 us |  4.86 |    0.20 |                    - |                - |      72 B |
+|                                  Sequential_List_Task |   628.43 us |  12.505 us |  25.825 us |   626.69 us |  4.71 |    0.19 |                    - |                - |      73 B |
+|                                  Sequential_Dict_Task | 2,885.62 us |  68.614 us | 195.760 us | 2,860.88 us | 21.49 |    1.02 |                    - |                - |      74 B |
+|                                 Sequential_CDict_Task | 3,332.12 us |  83.432 us | 235.323 us | 3,301.82 us | 27.23 |    2.19 |                    - |                - |      76 B |
+|                                        Parallel_Array |    89.98 us |   0.290 us |   0.242 us |    89.96 us |  0.67 |    0.01 |              12.3413 |           0.0010 |     824 B |
+|                                  Parallel_Array_Fixed |    81.76 us |   1.595 us |   1.707 us |             |  0.57 |    0.02 |              11.0405 |           0.0010 |     824 B |
+|                                         Parallel_Span |    87.02 us |   1.622 us |   1.517 us |    86.46 us |  0.65 |    0.01 |              11.9420 |           0.0015 |     824 B |
+|                                 Parallel_ArraySegment |   169.31 us |   1.905 us |   1.782 us |   169.78 us |  1.27 |    0.03 |              15.9355 |           0.0005 |     824 B |
+|                                         Parallel_List |   163.34 us |   1.826 us |   1.619 us |   163.21 us |  1.22 |    0.02 |              15.8853 |           0.0007 |     824 B |
+|                                  Parallel_List_Unsafe |    87.25 us |   1.669 us |   1.561 us |    86.54 us |  0.65 |    0.02 |              12.2083 |           0.0029 |     823 B |
+|                         Parallel_List_UnsafeAgressive |   114.73 us |   2.284 us |   5.294 us |   112.91 us |  0.88 |    0.06 |              13.9624 |           0.0005 |     824 B |
+|               Parallel_List_UnsafeAgressive_Extension |   104.31 us |   1.065 us |   0.944 us |   104.06 us |  0.78 |    0.01 |              13.6283 |           0.0037 |     824 B |
+|         Parallel_List_UnsafeAgressive_ExtensionInline |   107.59 us |   0.882 us |   0.737 us |   107.69 us |  0.81 |    0.01 |              13.7836 |           0.0015 |     824 B |
+|  Parallel_List_UnsafeAgressive_ExtensionInlineOnecall |   103.45 us |   0.832 us |   0.778 us |   103.19 us |  0.77 |    0.01 |              13.7139 |           0.0026 |     824 B |
+|                                         Parallel_Dict |   380.13 us |   5.320 us |   4.976 us |   380.87 us |  2.85 |    0.05 |              15.9868 |                - |     824 B |
+|                                        Parallel_CDict |   432.46 us |   7.656 us |   6.787 us |   433.99 us |  3.24 |    0.05 |              15.9902 |           0.0010 |     824 B |
+|                                  Parallel_Dict_TryGet |   349.16 us |   5.481 us |   5.865 us |   347.92 us |  2.61 |    0.05 |              15.9590 |           0.0005 |     825 B |
+|                                 Parallel_CDict_TryGet |   348.83 us |   6.784 us |   6.346 us |   349.77 us |  2.61 |    0.07 |              15.9014 |           0.0005 |     825 B |
 
 
 // * Legends *

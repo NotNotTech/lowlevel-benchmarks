@@ -21,3 +21,39 @@ public class Program
 #endif
 	}
 }
+
+
+
+//public class SomeClass
+//{
+//	private int indexCounter;
+//	public int GetTypeIndex<T>()
+//	{
+//		var typeLocal = new TypeLocal<int>();
+//		if (!typeLocal.TryGet<T>(out var index){
+//			index = indexCounter++;
+//			typeLocal.Set<T>(index);
+//		}
+//		return index;
+//	}
+
+//}
+
+///// <summary>
+///// similar to ThreadLocal, but provides a value per type.
+///// </summary>
+///// <typeparam name="TValue"></typeparam>
+//public interface TypeLocal<TValue>
+//{
+//	public TValue Get<TType>();
+
+//	public bool TryGet<TType>(out TValue value);
+
+//	public void Set<TType>(TValue value);
+
+//	public void Remove<TType>();
+
+//	public bool HasValue<TType>();
+
+//	public IEnumerable<(Type type, TValue value)> All();
+//}
